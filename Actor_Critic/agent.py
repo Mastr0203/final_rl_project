@@ -144,10 +144,9 @@ class Agent(object):
 
         # --- 2) Actor update --------------
         advantages = (target - critic_vals).detach()
-        adv_std = advantages.std().item()
         actor_loss = -(log_probs * advantages).sum()
 
         self.optimizer.zero_grad()
         actor_loss.backward()
         self.optimizer.step()
-        return actor_loss + critic_loss, adv_std
+        return actor_loss + critic_loss, advantages.item()

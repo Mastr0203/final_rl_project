@@ -119,6 +119,7 @@ def main() -> None:
             obs, _ = env.reset(seed=episode)
             terminated = [False] * env.num_envs
             ep_returns = np.zeros(env.num_envs)
+            advantages = []
 
             while not all(terminated):
                 actions, log_probs = agent.get_action(obs)
@@ -131,7 +132,10 @@ def main() -> None:
                         agent.store_outcome(prev_obs[i], obs[i], log_probs[i], rewards[i], done[i])
                         ep_returns[i] += rewards[i]
                 terminated = np.logical_or(terminated, done)
-                loss, adv_std = agent.update_policy()
+                loss, adv = agent.update_policy()
+                advantages.append(adv)
+            
+            adv_std = np.array(advantages).flatten().std()
             
             score_history.append(np.mean(ep_returns))
             if len(score_history) >= 100:
