@@ -149,4 +149,4 @@ class Agent(object):
         self.optimizer.zero_grad()
         actor_loss.backward()
         self.optimizer.step()
-        return actor_loss + critic_loss, advantages.item()
+        return actor_loss + critic_loss, advantages.cpu().numpy()

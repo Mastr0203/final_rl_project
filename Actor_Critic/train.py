@@ -135,7 +135,7 @@ def main() -> None:
                 loss, adv = agent.update_policy()
                 advantages.append(adv)
             
-            adv_std = np.array(advantages).flatten().std()
+            adv_std = np.std(np.concatenate(advantages))
             
             score_history.append(np.mean(ep_returns))
             if len(score_history) >= 100:
