@@ -111,7 +111,7 @@ def main() -> None:
         args_agent["policy"] = Policy(**args_policy)
         args_agent["critic"] = Critic(**args_critic)
         agent = Agent(**args_agent)
-        best_score = env.envs[0].reward_range[0]
+        best_score = -np.inf
         score_history = []
 
         start_time = time.time()
