@@ -1,0 +1,7 @@
+{"time":"2025-06-05T12:47:54.43745+02:00","level":"INFO","msg":"stream: starting","core version":"0.19.11","symlink path":"/Users/usermastro/Desktop/Secondo_Semestre_24-25/ML_DL/RL_project/Code/definitive_rl_project/REINFORCE/wandb/run-20250605_124754-ozz985s0/logs/debug-core.log"}
+{"time":"2025-06-05T12:47:54.759969+02:00","level":"INFO","msg":"created new stream","id":"ozz985s0"}
+{"time":"2025-06-05T12:47:54.760236+02:00","level":"INFO","msg":"stream: started","id":"ozz985s0"}
+{"time":"2025-06-05T12:47:54.760247+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"ozz985s0"}
+{"time":"2025-06-05T12:47:54.760273+02:00","level":"INFO","msg":"handler: started","stream_id":"ozz985s0"}
+{"time":"2025-06-05T12:47:54.760567+02:00","level":"INFO","msg":"sender: started","stream_id":"ozz985s0"}
+{"time":"2025-06-05T12:47:55.110129+02:00","level":"INFO","msg":"Starting system monitor"}
