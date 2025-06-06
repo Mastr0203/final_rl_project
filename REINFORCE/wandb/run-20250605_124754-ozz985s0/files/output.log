@@ -1,1 +1,7 @@
 [Episode 20000] return = 40.62, loss = 10055.5527, elapsed = 918.9s
+[Episode 40000] return = 4.42, loss = 217.6908, elapsed = 1595.1s
+[Episode 60000] return = 310.27, loss = -381767.1250, elapsed = 1830.4s
+[Episode 80000] return = 15.25, loss = 5593.2192, elapsed = 778.2s
+[Episode 100000] return = 379.77, loss = 713202.2500, elapsed = 1188.8s
+FINAL_RESULT: 379.77 ± 253.55
+BEST_MODEL_AVG_SCORE: 598.04 ± 66.61

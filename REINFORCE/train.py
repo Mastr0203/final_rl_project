@@ -148,7 +148,6 @@ def main() -> None:
                 avg_score = np.mean(score_history)
                 avg_std_score = np.std(score_history)
 
-
             if avg_score > best_score:
                 best_score = avg_score
                 best_std_score = avg_std_score

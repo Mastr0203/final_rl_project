@@ -166,9 +166,7 @@ def main() -> None:
                 env.render()
 
             if (episode + 1) % args.print_every == 0:
-                elapsed = time.time() - start_time
-                print(f"[Episode {episode+1}] mean_return = {ep_returns.mean():.2f} ± {ep_returns.std():.2f}, loss = {loss:.4f}, elapsed = {elapsed:.1f}s")
-                start_time = time.time()
+                print(f"[Episode {episode+1}] mean_return = {ep_returns.mean():.2f} ± {ep_returns.std():.2f}, loss = {loss:.4f}")
         
         print(f"FINAL_RESULT: {ep_returns.mean():.2f} ± {ep_returns.std():.2f}")
         print(f"BEST_MODEL_AVG_SCORE: {best_score:.2f} ± {best_std_score:.2f}")
