@@ -1,5 +1,11 @@
-wandb/
-*.mdl
-*.pyc
+# Ignora cache Python
 __pycache__/
-models/
+**/__pycache__/
+
+# Ignora modelli salvati
+REINFORCE/models/
+Actor_Critic/models/
+
+# Ignora file wandb
+REINFORCE/wandb/
+Actor_Critic/wandb/
