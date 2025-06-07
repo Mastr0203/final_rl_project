@@ -104,6 +104,7 @@ def main() -> None:
         "lr_policy" : args.lr_policy,
         "lr_baseline" : args.lr_baseline,
         "baseline" : args.baseline,
+        "n_envs": args.n_envs,
     }
 
     def train():
@@ -135,7 +136,7 @@ def main() -> None:
 
                 for i in range(env.num_envs):
                     if not terminated[i]:
-                        agent.store_outcome(prev_obs[i], log_probs[i], rewards[i])
+                        agent.store_outcome(i, prev_obs[i], log_probs[i], rewards[i], done[i])
                         ep_returns[i] += rewards[i]
                 terminated = np.logical_or(terminated, done)
 
