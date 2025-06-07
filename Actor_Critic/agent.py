@@ -117,7 +117,11 @@ class Agent(object):
     # 3.  UPDATE                                                     #
     # -------------------------------------------------------------- #
     def update_policy(self):
-        log_probs = torch.stack(self.action_log_probs_buffer).to(self.train_device).squeeze(-1)
+        log_probs = (
+            torch.stack(self.action_log_probs_buffer)
+            .to(self.train_device)
+            .squeeze(-1)
+        )
         states = torch.stack(self.states_buffer).to(self.train_device)
         next_states = torch.stack(self.next_states_buffer).to(self.train_device)
         rewards = torch.stack(self.rewards_buffer).to(self.train_device).squeeze(-1)
@@ -143,8 +147,8 @@ class Agent(object):
         self.optimizer_critic.step()
 
         # --- 2) Actor update --------------
-        advantages = (target - critic_vals).detach()
-        actor_loss = -(log_probs * advantages).sum()
+        advantages = (target - critic_vals).detach().squeeze(-1)
+        actor_loss = -(log_probs * advantages).mean()
 
         self.optimizer.zero_grad()
         actor_loss.backward()
