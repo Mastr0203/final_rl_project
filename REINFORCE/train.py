@@ -44,7 +44,7 @@ args = parse_args()
 def main() -> None:
 
     if args.WandDB:
-        run_name = f"REINFORCE_{args.domain}_g{args.gamma}_lrp{args.lr_policy}_lrc{args.lr_baseline}_bsln{args.baseline}_h{args.hidden}"
+        run_name = f"REINFORCE_{args.domain}_g{args.gamma}_lrp{args.lr_policy}_lrb{args.lr_baseline}_bsln{args.baseline}_h{args.hidden}_ep{args.n_episodes}"
 
         wandb.init(
             project="Reinforcement Learning",
