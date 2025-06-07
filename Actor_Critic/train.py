@@ -129,7 +129,7 @@ def main() -> None:
 
                 for i in range(env.num_envs):
                     if not terminated[i]:
-                        agent.store_outcome(prev_obs[i], obs[i], log_probs[i], rewards[i], done[i])
+                        agent.store_outcome(prev_obs[i], actions[i], obs[i], log_probs[i], rewards[i], done[i])
                         ep_returns[i] += rewards[i]
                 terminated = np.logical_or(terminated, done)
                 loss, adv = agent.update_policy()

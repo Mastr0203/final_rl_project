@@ -79,6 +79,7 @@ class Agent(object):
         self.gamma = gamma
         self.states_buffer = []
         self.next_states_buffer = []
+        self.actions_buffer = []
         self.action_log_probs_buffer = []
         self.rewards_buffer = []
         self.done_buffer = []
@@ -106,8 +107,9 @@ class Agent(object):
     # -------------------------------------------------------------- #
     # 2.  STORE STEP                                                 #
     # -------------------------------------------------------------- #
-    def store_outcome(self, state, next_state, log_prob, reward, done):
+    def store_outcome(self, state, action, next_state, log_prob, reward, done):
         self.states_buffer.append(torch.from_numpy(state).float())
+        self.actions_buffer.append(torch.from_numpy(action).float())
         self.next_states_buffer.append(torch.from_numpy(next_state).float())
         self.action_log_probs_buffer.append(log_prob)
         self.rewards_buffer.append(torch.tensor([reward], dtype=torch.float32))
@@ -120,10 +122,11 @@ class Agent(object):
         log_probs = torch.stack(self.action_log_probs_buffer).to(self.train_device).squeeze(-1)
         states = torch.stack(self.states_buffer).to(self.train_device)
         next_states = torch.stack(self.next_states_buffer).to(self.train_device)
+        actions = torch.stack(self.actions_buffer).to(self.train_device)
         rewards = torch.stack(self.rewards_buffer).to(self.train_device).squeeze(-1)
         done = torch.tensor(self.done_buffer, dtype=torch.float32, device=self.train_device)
 
-        self.states_buffer, self.next_states_buffer = [], []
+        self.states_buffer, self.next_states_buffer, self.actions_buffer = [], [], []
         self.action_log_probs_buffer, self.rewards_buffer, self.done_buffer = [], [], []
 
         with torch.no_grad():
@@ -133,7 +136,7 @@ class Agent(object):
             target = r_col + self.gamma * \
                        self.critic(next_states, next_act) * (1 - done_col)
 
-        current_act = self.policy(states).mean.detach() if self.AC_critic == 'Q' else None
+        current_act = actions if self.AC_critic == 'Q' else None
         critic_vals = self.critic(states, current_act)
 
         critic_loss = F.mse_loss(critic_vals, target)
