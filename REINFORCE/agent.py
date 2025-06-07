@@ -75,6 +75,7 @@ class Agent(object):
         lr_policy: float = 5e-4,
         lr_baseline: float = 5e-4,
         baseline: float = 0,
+        n_envs: int = 1,
     ):
         self.train_device = device
         self.policy = policy.to(self.train_device)
@@ -89,9 +90,12 @@ class Agent(object):
         # --- Buffers ---
         self.gamma = gamma
         self.baseline = baseline
-        self.states_buffer = []
-        self.action_log_probs_buffer = []
-        self.rewards_buffer = []
+        self.n_envs = n_envs
+        self.states_buffer = [[] for _ in range(n_envs)]
+        self.action_log_probs_buffer = [[] for _ in range(n_envs)]
+        self.rewards_buffer = [[] for _ in range(n_envs)]
+        # store completed episodes
+        self.episode_data = []
 
     @staticmethod
     def discount_rewards(r, gamma = 0.99):
@@ -137,28 +141,46 @@ class Agent(object):
     # -------------------------------------------------------------- #
     # 2.  STORE STEP                                                 #
     # -------------------------------------------------------------- #
-    def store_outcome(self, state, log_prob, reward):
-        self.states_buffer.append(torch.from_numpy(state).float())
-        self.action_log_probs_buffer.append(log_prob)
-        self.rewards_buffer.append(torch.tensor([reward], dtype=torch.float32))
+    def store_outcome(self, env_idx: int, state, log_prob, reward, done: bool):
+        self.states_buffer[env_idx].append(torch.from_numpy(state).float())
+        self.action_log_probs_buffer[env_idx].append(log_prob)
+        self.rewards_buffer[env_idx].append(torch.tensor([reward], dtype=torch.float32))
+
+        if done:
+            states = torch.stack(self.states_buffer[env_idx])
+            log_probs = torch.stack(self.action_log_probs_buffer[env_idx]).squeeze(-1)
+            rewards = torch.stack(self.rewards_buffer[env_idx]).squeeze(-1)
+
+            disc_returns = self.discount_rewards(rewards, self.gamma)
+            self.episode_data.append({
+                "states": states,
+                "log_probs": log_probs,
+                "returns": disc_returns,
+            })
+
+            self.states_buffer[env_idx] = []
+            self.action_log_probs_buffer[env_idx] = []
+            self.rewards_buffer[env_idx] = []
 
     # -------------------------------------------------------------- #
     # 3.  UPDATE                                                     #
     # -------------------------------------------------------------- #
     def update_policy(self):
-        log_probs = torch.stack(self.action_log_probs_buffer).to(self.train_device).squeeze(-1)
-        states = torch.stack(self.states_buffer).to(self.train_device)
-        rewards = torch.stack(self.rewards_buffer).to(self.train_device).squeeze(-1)
+        if not self.episode_data:
+            return 0, 0
 
-        self.states_buffer, self.action_log_probs_buffer, self.rewards_buffer = [], [], []
+        log_probs = torch.cat([ep["log_probs"] for ep in self.episode_data]).to(self.train_device)
+        states = torch.cat([ep["states"] for ep in self.episode_data]).to(self.train_device)
+        returns = torch.cat([ep["returns"] for ep in self.episode_data]).to(self.train_device)
 
-        pred_baseline = self.get_baseline(rewards, baseline_value=self.baseline, states=states, baseline_model=self.baseline_model)
-        disc_returns = self.discount_rewards(rewards, self.gamma)
-        advantage = disc_returns - pred_baseline.detach()
+        self.episode_data = []
+
+        pred_baseline = self.get_baseline(returns, baseline_value=self.baseline, states=states, baseline_model=self.baseline_model)
+        advantage = returns - pred_baseline.detach()
         actor_loss = -(log_probs * advantage).sum()
 
         if self.baseline_model is not None:
-            baseline_loss = torch.nn.functional.mse_loss(pred_baseline, disc_returns.detach())
+            baseline_loss = torch.nn.functional.mse_loss(pred_baseline, returns.detach())
             self.optimizer_baseline.zero_grad()
             baseline_loss.backward()
             self.optimizer_baseline.step()
