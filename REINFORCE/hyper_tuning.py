@@ -3,13 +3,20 @@ import itertools
 import subprocess
 from pathlib import Path
 
+"""
+RESULTS:
+Baseline 0: gamma=0.995, lr_policy=0.01, lr_baseline=0.001, baseline=0, hidden=64, best_score=497.81
+Baseline 20: gamma=0.995, lr_policy=0.0001, lr_baseline=0.001, baseline=20, hidden=128, best_score=503.13
+Baseline dynamic: gamma=0.99, lr_policy=0.01, lr_baseline=0.0001, baseline=dynamic, hidden=64, best_score=526.11
+"""
+
 
 SEARCH_SPACE = {
-    "gamma": [0.9, 0.99, 0.995],
-    "lr_policy": [1e-3, 1e-4, 5e-4, 1e-2],
-    "lr_baseline": [1e-3, 1e-4, 5e-4, 1e-2],
-    "baseline": ["0", "20", "dynamic"],
-    "hidden": [32, 64, 128],
+    "gamma": [0.995],
+    "lr_policy": [1e-4],
+    "lr_baseline": [1e-3],
+    "baseline": ["20"],
+    "hidden": [128],
 }
 
 

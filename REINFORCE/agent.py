@@ -91,11 +91,12 @@ class Agent(object):
         self.gamma = gamma
         self.baseline = baseline
         self.n_envs = n_envs
+        # To explain
         self.states_buffer = [[] for _ in range(n_envs)]
         self.action_log_probs_buffer = [[] for _ in range(n_envs)]
         self.rewards_buffer = [[] for _ in range(n_envs)]
         # store completed episodes
-        self.episode_data = []
+        self.episode_data = [] # To explain
 
     @staticmethod
     def discount_rewards(r, gamma = 0.99):
